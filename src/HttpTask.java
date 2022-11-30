@@ -24,13 +24,18 @@ public class HttpTask implements Runnable{
     }
 
     private static void sendResponse(Socket socket, String protocol, STATUS_CODE status, String[] headers, byte[] content, boolean encrypted) throws IOException {
-        OutputStream clientOutput = encrypted ? new GZIPOutputStream(socket.getOutputStream()) : socket.getOutputStream();
-        //
+        OutputStream clientOutput = socket.getOutputStream();
         clientOutput.write((protocol + " " + status + "\r\n").getBytes());
         for (String header : headers)
             clientOutput.write((header + "\r\n").getBytes());
         clientOutput.write("\r\n".getBytes());
-        clientOutput.write(content);
+        if (encrypted) {
+            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(socket.getOutputStream());
+            gzipOutputStream.write(content);
+            gzipOutputStream.flush();
+            gzipOutputStream.close();
+        } else
+            clientOutput.write(content);
         clientOutput.flush();
         clientOutput.close();
     }
