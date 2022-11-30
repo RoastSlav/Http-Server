@@ -5,13 +5,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Main {
     private static final String PROGRAM_NAME = "Http-Server";
     private static final int DEFAULT_PORT = 8085;
-    private static final String DEFAULT_SERVER_PATH = "/webroot";
     private static final HelpFormatter FORMATTER = new HelpFormatter();
     private static final int DEFAULT_THREAD_COUNT = 1;
     private static ExecutorService threadPool;
@@ -58,54 +59,9 @@ public class Main {
             portToUse = Integer.parseInt(cmd.getOptionValue("p"));
 
         ServerSocket socket = new ServerSocket(portToUse);
-        while (!socket.isClosed()) {
-            Socket connection = socket.accept();
-            Runnable r = () -> {
-                try {
-                    BufferedInputStream inputStream = new BufferedInputStream(connection.getInputStream());
-                    OutputStream outputStream = connection.getOutputStream();
-                    StringBuilder requestString = new StringBuilder();
-                    while (inputStream.available() > 0) {
-                        requestString.append((char) inputStream.read());
-                    }
-
-                    HttpRequest request;
-                    if (!requestString.isEmpty()) {
-                        request = parseRequest(requestString.toString());
-
-                    }
-                } catch (Exception e) {
-                    System.out.println("There was an error receiving the request");
-                }
-            };
-            threadPool.submit(r);
+        Socket s = null;
+        while ((s = socket.accept()) != null) {
+            threadPool.submit(new HttpTask(s, cmd));
         }
-    }
-
-    private static HttpRequest parseRequest(String requestString) {
-        String[] requestSplit = requestString.split("\n");
-        HttpRequest httpRequest = new HttpRequest();
-
-        String[] request = requestSplit[0].split(" ");
-        String httpRequestType = request[0];
-        httpRequest.type = HttpRequestTypes.valueOf(httpRequestType);
-        httpRequest.filename = request[1];
-        httpRequest.httpProtocol = request[2];
-
-        String header = requestSplit[1];
-        int i = 1;
-        for (; !header.equals("\r"); i++) {
-            String[] nameAndValue = header.split(": ");
-            httpRequest.headers.put(nameAndValue[0], nameAndValue[1]);
-            header = requestSplit[i];
-        }
-
-        StringBuilder content = new StringBuilder();
-        for (; i < requestSplit.length; i++) {
-            content.append(requestSplit[i]);
-        }
-        httpRequest.content = content.toString();
-
-        return httpRequest;
     }
 }

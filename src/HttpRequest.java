@@ -1,9 +1,9 @@
 import java.util.HashMap;
 
 public class HttpRequest {
-    HttpRequestTypes type;
-    String filename;
-    String httpProtocol;
+    HTTP_REQUEST_METHOD method;
+    String path;
+    String protocol;
     HashMap<String, String> headers = new HashMap<>();
     String content;
 }
