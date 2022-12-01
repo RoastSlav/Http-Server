@@ -1,12 +1,8 @@
 import org.apache.commons.cli.*;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,6 +13,7 @@ public class Main {
     private static final int DEFAULT_THREAD_COUNT = 1;
     private static ExecutorService threadPool;
     private static CommandLine cmd = null;
+
     public static void main(String[] args) throws IOException {
         Options options = intializeOptions();
         CommandLineParser cmdParser = new DefaultParser();
@@ -48,7 +45,7 @@ public class Main {
         options.addOption(port);
         Option threads = Option.builder("t").longOpt("threads").argName("Threads number").hasArg().desc("The number of threads to process requests").build();
         options.addOption(threads);
-        Option directories = Option.builder("d").argName("Show directories").hasArg().desc("If the file is a directory show the files in it.").build();
+        Option directories = Option.builder("d").argName("Show directories").desc("If the file is a directory show the files in it.").build();
         options.addOption(directories);
         return options;
     }

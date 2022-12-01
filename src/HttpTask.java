@@ -2,42 +2,22 @@ import org.apache.commons.cli.CommandLine;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.zip.GZIPOutputStream;
 
-public class HttpTask implements Runnable{
+public class HttpTask implements Runnable {
     private static final String DEFAULT_SERVER_PATH = "webroot";
     private static final String INDEX_FILE = "\\index.html";
+    private static final Path NOT_FOUND_PAGE = Path.of("webroot\\NotFound.html");
     Socket connection;
     static CommandLine cmd;
+
     HttpTask(Socket connection, CommandLine cmd) {
         this.connection = connection;
         HttpTask.cmd = cmd;
-    }
-
-    private static void sendResponse(Socket socket, String protocol, STATUS_CODE status, String[] headers, byte[] content, boolean encrypted) throws IOException {
-        OutputStream clientOutput = socket.getOutputStream();
-        clientOutput.write((protocol + " " + status + "\r\n").getBytes());
-        for (String header : headers)
-            clientOutput.write((header + "\r\n").getBytes());
-        clientOutput.write("\r\n".getBytes());
-        if (encrypted) {
-            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(socket.getOutputStream());
-            gzipOutputStream.write(content);
-            gzipOutputStream.flush();
-            gzipOutputStream.close();
-        } else
-            clientOutput.write(content);
-        clientOutput.flush();
-        clientOutput.close();
     }
 
     private static HttpRequest parseRequest(String requestString) {
@@ -68,29 +48,38 @@ public class HttpTask implements Runnable{
     }
 
     private static void logRequest(HttpRequest request) {
-        StringBuilder log = new StringBuilder();
-        log.append(new Date());
-        log.append(request.method);
-        log.append(request.path);
-        log.append(request.headers.get("User-Agent"));
+        StringBuilder log = buildLog(request);
         System.out.println(log);
     }
 
     private static void logError(HttpRequest request) {
+        StringBuilder log = buildLog(request);
+        log.append(" Error (404): \"Not found\"");
+        System.out.println(log);
+    }
+
+    private static StringBuilder buildLog(HttpRequest request) {
         StringBuilder log = new StringBuilder();
         log.append(new Date()).append(" ");
         log.append(request.method).append(" ");
         log.append(request.path).append(" ");
         log.append(request.headers.get("User-Agent")).append(" ");
-        log.append(" Error (404): \"Not found\"");
-        System.out.println(log);
+        return log;
     }
 
     private static void sendNotFoundResponse(HttpRequest request, Socket socket) throws IOException {
-        byte[] content = ("Not found: " + request.path).getBytes();
-        ArrayList<String> headers = new ArrayList<>();
-        headers.add(new Date().toString());
-        sendResponse(socket, request.protocol, STATUS_CODE.NOT_FOUND, headers.toArray(String[]::new), content, false);
+        HttpResponse response = new HttpResponse();
+        response.filePath = NOT_FOUND_PAGE;
+        response.headers.add(new Date().toString());
+        response.statusCode = STATUS_CODE.NOT_FOUND;
+        response.protocol = request.protocol;
+
+        if (request.headers.get("Accept-Encoding").contains("gzip")) {
+            response.headers.add("content-encoding: gzip");
+            response.sendResponseEncoded(socket);
+            return;
+        }
+        response.sendResponse(socket);
     }
 
     private static void sendOkResponse(HttpRequest request, Socket socket, Path filepath) throws IOException {
@@ -98,54 +87,49 @@ public class HttpTask implements Runnable{
             sendDirResponse(socket, request, filepath);
             return;
         }
-        byte[] bytes = Files.readAllBytes(filepath);
-        ArrayList<String> headers = new ArrayList<>();
-        headers.add("content-type: " + Files.probeContentType(filepath));
-        headers.add("content-length: " + bytes.length);
-        headers.add("date: " + new Date());
-        headers.add("last-modified: " + Files.getLastModifiedTime(filepath));
 
-        boolean encoded = false;
+        HttpResponse response = new HttpResponse();
+        response.statusCode = STATUS_CODE.OK;
+        response.protocol = request.protocol;
+        response.filePath = filepath;
+        response.headers.add("content-type: " + Files.probeContentType(filepath));
+        response.headers.add("date: " + new Date());
+        response.headers.add("last-modified: " + Files.getLastModifiedTime(filepath));
+
         if (request.headers.get("Accept-Encoding").contains("gzip")) {
-            headers.add("content-encoding: gzip");
-            encoded = true;
+            response.headers.add("content-encoding: gzip");
+            response.sendResponseEncoded(socket);
+            return;
         }
-
-        sendResponse(socket, request.protocol, STATUS_CODE.OK, headers.toArray(String[]::new), bytes, encoded);
+        response.sendResponse(socket);
     }
 
     private static void sendDirResponse(Socket socket, HttpRequest request, Path filepath) throws IOException {
-        if (Files.exists(filepath)) {
-            byte[] bytes = null;
-            Path indexFile = Paths.get(filepath.toString(), INDEX_FILE);
-            if (Files.exists(indexFile))
-                bytes = Files.readAllBytes(indexFile);
-            else if (cmd.hasOption("d")){
-                ByteBuffer byteBuffer = ByteBuffer.allocate(100000);
-                Iterator<Path> files = Files.list(filepath).iterator();
-                while (files.hasNext()) {
-                    Path next = files.next();
-                    String fileName = "<a href=\"" + next.toString() + "\">" + next.getFileName().toString() + "</a> </br>";
-                    byteBuffer.put(fileName.getBytes());
-                }
-                bytes = byteBuffer.array();
-            }
-            if (bytes == null)
-                sendNotFoundResponse(request, socket);
+        HttpResponse response = new HttpResponse();
 
-            ArrayList<String> headers = new ArrayList<>();
-            headers.add("content-type: text/text");
-            headers.add("content-length: " + bytes.length);
-            headers.add("date: " + new Date());
-            headers.add("last-modified: " + Files.getLastModifiedTime(filepath));
-
-            boolean encoded = false;
-            if (request.headers.get("content-encoding").contains("gzip")) {
-                headers.add("content-encoding: gzip");
-                encoded = true;
-            }
-            sendResponse(socket, request.protocol, STATUS_CODE.OK, headers.toArray(String[]::new), bytes, encoded);
+        Path indexFile = Paths.get(filepath.toString(), INDEX_FILE);
+        if (Files.exists(indexFile)) {
+            response.filePath = indexFile;
+            response.headers.add("last-modified: " + Files.getLastModifiedTime(indexFile));
+        } else if (cmd.hasOption("d")) {
+            response.filePath = filepath;
+            response.headers.add("last-modified: " + Files.getLastModifiedTime(filepath));
+        } else {
+            sendNotFoundResponse(request, socket);
+            return;
         }
+
+        response.statusCode = STATUS_CODE.OK;
+        response.protocol = request.protocol;
+        response.headers.add("content-type: text/html");
+        response.headers.add("date: " + new Date());
+
+        if (request.headers.get("Accept-Encoding").contains("gzip")) {
+            response.headers.add("content-encoding: gzip");
+            response.sendResponseEncoded(socket);
+            return;
+        }
+        response.sendResponse(socket);
     }
 
     @Override
@@ -174,7 +158,7 @@ public class HttpTask implements Runnable{
                 sendNotFoundResponse(request, connection);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("There was an error sending the response");
         }
     }
 }
