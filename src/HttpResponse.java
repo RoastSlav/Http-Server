@@ -27,7 +27,7 @@ public class HttpResponse {
         clientOutput.close();
     }
 
-    private static void sendContent(Path filePath, OutputStream output) throws IOException {
+    private void sendContent(Path filePath, OutputStream output) throws IOException {
         if (filePath.toFile().isDirectory()) {
             Iterator<Path> files = Files.list(filePath).iterator();
             while (files.hasNext()) {

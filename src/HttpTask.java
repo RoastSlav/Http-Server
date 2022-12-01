@@ -138,7 +138,7 @@ public class HttpTask implements Runnable {
         if (!cmd.hasOption("g") || !request.headers.get("Accept-Encoding").contains("gzip"))
             return;
 
-        Path filepathCompressed = Path.of(response.toString(), GZ_EXTENSION);
+        Path filepathCompressed = Path.of(response.filePath + GZ_EXTENSION);
         if (Files.exists(filepathCompressed)) {
             response.filePath = filepathCompressed;
             response.headers.add("content-encoding: gzip");
