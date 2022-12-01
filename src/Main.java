@@ -47,6 +47,10 @@ public class Main {
         options.addOption(threads);
         Option directories = Option.builder("d").argName("Show directories").desc("If the file is a directory show the files in it.").build();
         options.addOption(directories);
+        Option compress = Option.builder("c").argName("Real time compression").desc("Compress file realtime before sending").build();
+        options.addOption(compress);
+        Option sendCompressed = Option.builder("g").argName("Send compressed").desc("Send compressed files if the client supports it").build();
+        options.addOption(sendCompressed);
         return options;
     }
 

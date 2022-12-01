@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="62d37f85-e334-464b-b39e-a4bc4a8710f7" name="Changes" comment="fixed the encoding">
-      <change afterPath="$PROJECT_DIR$/src/HttpResponse.java" afterDir="false" />
+    <list default="true" id="62d37f85-e334-464b-b39e-a4bc4a8710f7" name="Changes" comment="Created HttpResponse and moved the send function in it. Also refactoring">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/HttpResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/HttpResponse.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/HttpTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/HttpTask.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
     </list>
@@ -71,7 +71,7 @@
       <updated>1669666040867</updated>
       <workItem from="1669666042486" duration="17627000" />
       <workItem from="1669792503330" duration="3070000" />
-      <workItem from="1669798992040" duration="7037000" />
+      <workItem from="1669798992040" duration="10040000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1669742840012</created>
@@ -94,7 +94,14 @@
       <option name="project" value="LOCAL" />
       <updated>1669795434918</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Created HttpResponse and moved the send function in it. Also refactoring">
+      <created>1669880641040</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1669880641041</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -115,6 +122,7 @@
     <MESSAGE value="initial commit" />
     <MESSAGE value="more stuff done" />
     <MESSAGE value="fixed the encoding" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed the encoding" />
+    <MESSAGE value="Created HttpResponse and moved the send function in it. Also refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="Created HttpResponse and moved the send function in it. Also refactoring" />
   </component>
 </project>

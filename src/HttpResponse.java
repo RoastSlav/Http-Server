@@ -15,28 +15,13 @@ public class HttpResponse {
     Path filePath;
 
     public void sendResponse(Socket socket) throws IOException {
+        headers.add("Content-Length: " + filePath.toFile().length());
         OutputStream clientOutput = socket.getOutputStream();
         clientOutput.write((protocol + " " + statusCode + "\r\n").getBytes());
         for (String header : headers)
             clientOutput.write((header + "\r\n").getBytes());
         clientOutput.write("\r\n".getBytes());
         sendContent(filePath, clientOutput);
-
-        clientOutput.flush();
-        clientOutput.close();
-    }
-
-    public void sendResponseEncoded(Socket socket) throws IOException {
-        OutputStream clientOutput = socket.getOutputStream();
-        clientOutput.write((protocol + " " + statusCode + "\r\n").getBytes());
-        for (String header : headers)
-            clientOutput.write((header + "\r\n").getBytes());
-        clientOutput.write("\r\n".getBytes());
-
-        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(socket.getOutputStream());
-        sendContent(filePath, gzipOutputStream);
-        gzipOutputStream.flush();
-        gzipOutputStream.close();
 
         clientOutput.flush();
         clientOutput.close();
