@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.zip.GZIPOutputStream;
 
 public class HttpResponse {
     ArrayList<String> headers = new ArrayList<>();

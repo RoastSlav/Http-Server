@@ -1,6 +1,9 @@
 import org.apache.commons.cli.CommandLine;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,7 +17,7 @@ public class HttpTask implements Runnable {
     private static final String INDEX_FILE = "\\index.html";
     private static final Path NOT_FOUND_PAGE = Path.of("webroot\\NotFound.html");
     private static final String GZ_EXTENSION = ".gz";
-    private static final Set<String> FILES_TO_COMPRESS = Set.of("text/plain", "text/css", "text/csv" , "text/html", "text/calendar", "text/javascript", "text/xml", "application/json", "application/xml", "image/svg+xml");
+    private static final Set<String> FILES_TO_COMPRESS = Set.of("text/plain", "text/css", "text/csv", "text/html", "text/calendar", "text/javascript", "text/xml", "application/json", "application/xml", "image/svg+xml");
     Socket connection;
     static CommandLine cmd;
 
