@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="62d37f85-e334-464b-b39e-a4bc4a8710f7" name="Changes" comment="Added support for gzip compression with pre-compressed files.">
+    <list default="true" id="62d37f85-e334-464b-b39e-a4bc4a8710f7" name="Changes" comment="minor refactoring">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/HttpResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/HttpResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/HttpTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/HttpTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/STATUS_CODE.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/STATUS_CODE.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,22 +34,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Programming Projects/Utility/apache-commons-cli/commons-cli-1.5.0.jar&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "D:/Programming Projects/Utility/apache-log4j-2.19.0-bin",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="Http-Server" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Main" />
@@ -70,7 +72,15 @@
       <updated>1669666040867</updated>
       <workItem from="1669666042486" duration="17627000" />
       <workItem from="1669792503330" duration="3070000" />
-      <workItem from="1669798992040" duration="11775000" />
+      <workItem from="1669798992040" duration="13119000" />
+      <workItem from="1669888385873" duration="1105000" />
+      <workItem from="1669891277572" duration="407000" />
+      <workItem from="1669891700291" duration="31000" />
+      <workItem from="1669891743428" duration="1364000" />
+      <workItem from="1669972090747" duration="889000" />
+      <workItem from="1669973224991" duration="266000" />
+      <workItem from="1669973642066" duration="1654000" />
+      <workItem from="1670828265670" duration="72000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1669742840012</created>
@@ -107,7 +117,21 @@
       <option name="project" value="LOCAL" />
       <updated>1669883489526</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="bug fix">
+      <created>1669884679454</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1669884679454</updated>
+    </task>
+    <task id="LOCAL-00007" summary="minor refactoring">
+      <created>1669885590051</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1669885590051</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -130,17 +154,8 @@
     <MESSAGE value="fixed the encoding" />
     <MESSAGE value="Created HttpResponse and moved the send function in it. Also refactoring" />
     <MESSAGE value="Added support for gzip compression with pre-compressed files." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added support for gzip compression with pre-compressed files." />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/HttpTask.java</url>
-          <line>169</line>
-          <option name="timeStamp" value="22" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="bug fix" />
+    <MESSAGE value="minor refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="minor refactoring" />
   </component>
 </project>

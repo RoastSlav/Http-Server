@@ -1,4 +1,6 @@
 import org.apache.commons.cli.CommandLine;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -17,6 +19,7 @@ public class HttpTask implements Runnable {
     private static final String INDEX_FILE = "\\index.html";
     private static final Path NOT_FOUND_PAGE = Path.of("webroot\\NotFound.html");
     private static final String GZ_EXTENSION = ".gz";
+    private static final Logger logger = Logger.getLogger(HttpTask.class);
     private static final Set<String> FILES_TO_COMPRESS = Set.of("text/plain", "text/css", "text/csv", "text/html", "text/calendar", "text/javascript", "text/xml", "application/json", "application/xml", "image/svg+xml");
     Socket connection;
     static CommandLine cmd;
@@ -53,26 +56,6 @@ public class HttpTask implements Runnable {
         return httpRequest;
     }
 
-    private static void logRequest(HttpRequest request) {
-        StringBuilder log = buildLog(request);
-        System.out.println(log);
-    }
-
-    private static void logError(HttpRequest request) {
-        StringBuilder log = buildLog(request);
-        log.append(" Error (404): \"Not found\"");
-        System.out.println(log);
-    }
-
-    private static StringBuilder buildLog(HttpRequest request) {
-        StringBuilder log = new StringBuilder();
-        log.append(new Date()).append(" ");
-        log.append(request.method).append(" ");
-        log.append(request.path).append(" ");
-        log.append(request.headers.get("User-Agent")).append(" ");
-        return log;
-    }
-
     private static void compressFile(Path filepath) throws IOException {
         try (FileInputStream inputStream = new FileInputStream(filepath.toFile())) {
             try (GZIPOutputStream outputStream = new GZIPOutputStream(new FileOutputStream(filepath + GZ_EXTENSION))) {
@@ -82,6 +65,7 @@ public class HttpTask implements Runnable {
                 }
             }
         }
+        logger.log(Level.DEBUG, "Created compressed file: " + filepath + GZ_EXTENSION);
     }
 
     private static void sendNotFoundResponse(HttpRequest request, Socket socket) throws IOException {
@@ -93,6 +77,7 @@ public class HttpTask implements Runnable {
 
         checkForCompressed(request, response);
         response.sendResponse(socket);
+        logger.log(Level.WARN, "Sent not found response for: " + request.path + " to " + socket.getInetAddress());
     }
 
     private static void sendOkResponse(HttpRequest request, Socket socket, Path filePath) throws IOException {
@@ -111,6 +96,7 @@ public class HttpTask implements Runnable {
 
         checkForCompressed(request, response);
         response.sendResponse(socket);
+        logger.log(Level.INFO, "Sent OK response for: " + request.path + " to " + socket.getInetAddress());
     }
 
     private static void sendDirResponse(Socket socket, HttpRequest request, Path filepath) throws IOException {
@@ -135,6 +121,7 @@ public class HttpTask implements Runnable {
         response.headers.add("date: " + new Date());
 
         response.sendResponse(socket);
+        logger.log(Level.INFO, "Sent directory response for: " + request.path + " to " + socket.getInetAddress());
     }
 
     private static void checkForCompressed(HttpRequest request, HttpResponse response) throws IOException {
@@ -171,10 +158,8 @@ public class HttpTask implements Runnable {
             HttpRequest request = parseRequest(requestString.toString());
             Path filePath = Paths.get(DEFAULT_SERVER_PATH, request.path);
             if (Files.exists(filePath)) {
-                logRequest(request);
                 sendOkResponse(request, connection, filePath);
             } else {
-                logError(request);
                 sendNotFoundResponse(request, connection);
             }
         } catch (IOException e) {

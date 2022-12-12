@@ -1,4 +1,6 @@
 import org.apache.commons.cli.*;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -13,6 +15,7 @@ public class Main {
     private static final int DEFAULT_THREAD_COUNT = 1;
     private static ExecutorService threadPool;
     private static CommandLine cmd = null;
+    static final Logger logger = Logger.getLogger(Main.class);
 
     public static void main(String[] args) throws IOException {
         Options options = intializeOptions();
@@ -62,6 +65,7 @@ public class Main {
         ServerSocket socket = new ServerSocket(portToUse);
         Socket s = null;
         while ((s = socket.accept()) != null) {
+            logger.log(Level.INFO,"New connection from " + s.getInetAddress().getHostAddress());
             threadPool.submit(new HttpTask(s, cmd));
         }
     }
